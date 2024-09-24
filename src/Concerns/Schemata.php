@@ -385,12 +385,12 @@ trait Schemata
                 }))
                 ->collapsible()
                 ->collapsed(fn (string $operation) => $operation === 'edit')
-                ->grid([
-                    'default' => 1,
-                    'md' => 2,
-                    'xl' => 3,
-                    '2xl' => 3,
-                ])
+//                ->grid([
+//                    'default' => 1,
+//                    'md' => 2,
+//                    'xl' => 3,
+//                    '2xl' => 3,
+//                ])
                 ->label('')
                 ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
                 ->addActionLabel(__('Add field'))
@@ -412,8 +412,8 @@ trait Schemata
                             $allSections = self::getVisibleFields($get('../../sections'), $arguments);
 
                             return [
-                                Textarea::make('description')
-                                    ->label(__('Field Description')),
+//                                Textarea::make('description')
+//                                    ->label(__('Field Description')),
                                 Group::make()
                                     ->label(__('Field Options'))
                                     ->schema(function (Get $get) use ($allSections, $component, $arguments) {
@@ -462,10 +462,13 @@ trait Schemata
         return [
             Hidden::make('description'),
             TextInput::make('name')
+                ->requiredPrefix(__('Field Name'))
+                ->placeholder(__('What is your question?'))
                 ->required()
                 ->lazy()
-                ->label(__('Field Name')),
+                ->label(''),
             Select::make('type')
+                ->requiredPrefix(__('Field Type'))
                 ->required()
                 ->searchable()
                 ->preload()
@@ -487,6 +490,9 @@ trait Schemata
                 ->live()
                 ->default('\LaraZeus\Bolt\Fields\Classes\TextInput')
                 ->label(__('Field Type')),
+            Textarea::make('description')
+                ->placeholder(__('Add some help text here'))
+                ->label(__('Hint Description')),
             Group::make()
                 ->schema(function (Get $get) {
                     $class = $get('type');
