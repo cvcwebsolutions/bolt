@@ -164,7 +164,7 @@ trait Schemata
                             if ($context === 'edit') {
                                 return;
                             }
-                            $set('slug', Str::slug($state));
+                            $set('slug', organization()->domain.'-'.Str::slug($state));
                         }),
                     TextInput::make('slug')
                         ->required()
@@ -391,6 +391,12 @@ trait Schemata
 //                    'xl' => 3,
 //                    '2xl' => 3,
 //                ])
+                ->addAction(function (Action $action) {
+                    return $action
+                        ->form([
+                            TextInput::make('nam')
+                        ]);
+                })
                 ->label('')
                 ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
                 ->addActionLabel(__('Add field'))
@@ -436,7 +442,6 @@ trait Schemata
                         }),
                 ])
                 ->schema(static::getFieldsSchema()),
-
             Hidden::make('compact')->default(0)->nullable(),
             Hidden::make('aside')->default(0)->nullable(),
             Hidden::make('icon')->nullable(),
