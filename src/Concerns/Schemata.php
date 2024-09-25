@@ -391,12 +391,6 @@ trait Schemata
 //                    'xl' => 3,
 //                    '2xl' => 3,
 //                ])
-                ->addAction(function (Action $action) {
-                    return $action
-                        ->form([
-                            TextInput::make('nam')
-                        ]);
-                })
                 ->label('')
                 ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
                 ->addActionLabel(__('Add field'))
@@ -427,6 +421,7 @@ trait Schemata
                                         if (class_exists($class)) {
                                             $newClass = (new $class);
                                             if ($newClass->hasOptions()) {
+                                                dump($newClass);
                                                 return $newClass->getOptions($allSections, $component->getState()[$arguments['item']]);
                                             }
                                         }

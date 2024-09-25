@@ -2,6 +2,7 @@
 
 namespace LaraZeus\Bolt\Livewire;
 
+use Coderflex\FilamentTurnstile\Forms\Components\Turnstile;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Illuminate\Support\Arr;
@@ -31,7 +32,7 @@ class FillForms extends Component implements Forms\Contracts\HasForms
     public bool $sent = false;
 
     public bool $inline = false;
-
+    public $captcha;
     protected static ?string $boltFormDesigner = null;
 
     public function getBoltFormDesigner(): ?string
@@ -48,7 +49,13 @@ class FillForms extends Component implements Forms\Contracts\HasForms
     {
         $getDesignerClass = $this->getBoltFormDesigner() ?? Designer::class;
 
-        return $getDesignerClass::ui($this->zeusForm, $this->inline);
+        $arrayComponent = array_merge($getDesignerClass::ui($this->zeusForm, $this->inline), [
+            Turnstile::make('captcha')
+                ->theme('light') // accepts light, dark, auto
+                ->language('en-US') // see below
+                ->size('normal'), // accepts normal, compact
+        ]);
+        return $arrayComponent;
     }
 
     protected function getFormModel(): Form

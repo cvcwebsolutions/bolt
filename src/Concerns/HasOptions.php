@@ -149,7 +149,7 @@ trait HasOptions
         return Grid::make()
             ->schema([
                 Select::make('options.dataSource')
-                    ->createOptionAction(fn (Action $action) => $action->hidden(auth()->user()->cannot('create', BoltPlugin::getModel('Collection'))))
+                    ->createOptionAction(fn (Action $action) => $action->visible(auth()->user()->can('create_collection')))
                     ->required()
                     ->createOptionForm([
                         TextInput::make('name')
@@ -158,21 +158,23 @@ trait HasOptions
                         Repeater::make('values')
                             ->grid([
                                 'default' => 1,
-                                'md' => 2,
-                                'lg' => 3,
+//                                'md' => 2,
+//                                'lg' => 3,
                             ])
                             ->label(__('Collections Values'))
                             ->columnSpan(2)
-                            ->columns(1)
+                            ->columns(2)
                             ->schema([
                                 TextInput::make('itemValue')
                                     ->live(onBlur: true)
                                     ->afterStateUpdated(function (Set $set, Get $get, string $operation) {
                                         $set('itemKey', $get('itemValue'));
                                     })
+                                    ->columnSpan(1)
                                     ->required()->label(__('Value'))->hint(__('what the user will see')),
                                 TextInput::make('itemKey')
                                     ->live(onBlur: true)
+                                    ->columnSpan(1)
                                     ->required()->label(__('Key'))->hint(__('what store in the form')),
                                 Toggle::make('itemIsDefault')->label(__('selected by default')),
                             ]),
