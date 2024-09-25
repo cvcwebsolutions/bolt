@@ -117,7 +117,7 @@ class CategoryResource extends BoltResource
             ->actions([
                 ActionGroup::make([
                     EditAction::make(),
-                    DeleteAction::make(),
+                    DeleteAction::make()->visible(auth()->user()->can('delete_category')),
                     ForceDeleteAction::make(),
                     RestoreAction::make(),
                 ]),
@@ -134,7 +134,7 @@ class CategoryResource extends BoltResource
                     ->query(fn (Builder $query): Builder => $query->where('is_active', false)),
             ])
             ->bulkActions([
-                DeleteBulkAction::make(),
+                DeleteBulkAction::make()->visible(auth()->user()->can('delete_category')),
                 ForceDeleteBulkAction::make(),
                 RestoreBulkAction::make(),
             ]);

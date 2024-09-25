@@ -178,7 +178,7 @@ class FormResource extends BoltResource
                     ->label(__('Category')),
             ])
             ->bulkActions([
-                DeleteBulkAction::make(),
+                DeleteBulkAction::make()->visible(auth()->user()->can('delete_form')),
                 ForceDeleteBulkAction::make(),
                 RestoreBulkAction::make(),
             ]);
@@ -239,7 +239,7 @@ class FormResource extends BoltResource
             EditAction::make('edit'),
             ReplicateFormAction::make(),
             RestoreAction::make(),
-            DeleteAction::make(),
+            DeleteAction::make()->visible(auth()->user()->can('delete_category')),
             ForceDeleteAction::make(),
 
             ActionGroup::make([

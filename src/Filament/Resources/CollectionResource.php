@@ -107,7 +107,7 @@ class CollectionResource extends BoltResource
             ->actions([
                 ActionGroup::make([
                     EditAction::make(),
-                    DeleteAction::make(),
+                    DeleteAction::make()->visible(auth()->user()->can('delete_collection')),
                 ]),
             ]);
     }
