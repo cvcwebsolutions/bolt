@@ -4,6 +4,7 @@ namespace LaraZeus\Bolt\Filament\Actions;
 
 use Filament\Actions\Concerns\CanReplicateRecords;
 use Filament\Actions\Contracts\ReplicatesRecords;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Set;
 use Filament\Support\Facades\FilamentIcon;
@@ -34,7 +35,7 @@ class ReplicateFormAction extends Action implements ReplicatesRecords
                         $set('slug', Str::slug($state));
                     }),
                 TextInput::make('slug')
-                    ->formatStateUsing(fn ($record) => $record->slug . '-' . rand(1, 99))
+                    ->formatStateUsing(fn ($record) => Filament::getTenant()->domain.'-'.$record->slug . '-' . rand(1, 99))
                     ->required()
                     ->maxLength(255)
                     ->rules(['alpha_dash'])

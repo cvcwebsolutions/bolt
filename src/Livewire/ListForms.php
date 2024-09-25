@@ -9,6 +9,7 @@ class ListForms extends Component
 {
     public function render(): View
     {
+        abort(404, 'This page is not available.');
         seo()
             ->site(config('zeus.site_title', 'Laravel'))
             ->title(__('Forms') . ' - ' . config('zeus.site_title'))
