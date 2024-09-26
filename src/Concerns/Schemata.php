@@ -2,6 +2,7 @@
 
 namespace LaraZeus\Bolt\Concerns;
 
+use App\Models\ZeusBolt\SavedField;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Component;
@@ -22,6 +23,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\ViewField;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use Filament\Notifications\Notification;
 use Guava\FilamentIconPicker\Forms\IconPicker;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
@@ -30,6 +32,7 @@ use LaraZeus\Accordion\Forms\Accordions;
 use LaraZeus\Bolt\BoltPlugin;
 use LaraZeus\Bolt\Facades\Bolt;
 use LaraZeus\Bolt\Models\Category;
+use Filament\Forms\Components\Actions;
 
 trait Schemata
 {
@@ -435,8 +438,64 @@ trait Schemata
                             $state[$arguments['item']] = array_merge($state[$arguments['item']], $data);
                             $component->state($state);
                         }),
+                    Action::make('saveQuestion')
+                        ->color('primary')
+                        ->tooltip(__('save to question bank'))
+                        ->icon('heroicon-m-inbox-arrow-down')
+                        ->requiresConfirmation()
+                        ->action(function (Get $get, array $arguments, Repeater $component): void {
+                            $stateRepeater = $get('./');
+                            $fieldsData = $stateRepeater['fields'][$arguments['item']];
+
+                            if($fieldsData['name'] == null) {
+                                Notification::make()
+                                    ->title(__('Name is required'))
+                                    ->danger()
+                                    ->send();
+                                return;
+                            }
+                            unset($fieldsData['id']);
+                            unset($fieldsData['section_id']);
+                            SavedField::create($fieldsData);
+                            Notification::make()
+                                ->title(__('Field saved to question bank'))
+                                ->success()
+                                ->send();
+                        }),
                 ])
                 ->schema(static::getFieldsSchema()),
+
+            Actions::make([
+                Action::make('Open Question Bank')
+                    ->modalHeading(__('Question Bank'))
+                    ->size('sm')
+                    ->icon('heroicon-m-folder-open')
+                    ->color('warning')
+                    ->form([
+                        Select::make('field_id')
+                            ->label(__('Select Question'))
+                            ->required()
+                            ->inlineLabel()
+                            ->options(function(){
+                                $fields = SavedField::where('organization_id', Filament::getTenant()->id)->get();
+                                $fieldData = [];
+                                foreach($fields as $field) {
+                                    $fieldData[$field->id] = $field->name;
+                                }
+                                return $fieldData;
+                            })
+                    ])
+                    ->action(function (array $data, Get $get, Set $set):void {
+                        $fieldBank = SavedField::find($data['field_id'])->toArray();
+                        $fields = $get('fields');
+                        $newUuid = (string) Str::uuid();
+                        unset($fieldBank['id']);
+                        $fields[$newUuid] = $fieldBank;
+                        $fields[$newUuid]['name'] = $fieldBank['name'][array_key_first($fieldBank['name'])];
+                        $set('fields', $fields);
+
+                    }),
+            ]),
             Hidden::make('compact')->default(0)->nullable(),
             Hidden::make('aside')->default(0)->nullable(),
             Hidden::make('icon')->nullable(),
@@ -505,7 +564,7 @@ trait Schemata
                     }
 
                     return [];
-                }),
+                })
         ];
     }
 }
