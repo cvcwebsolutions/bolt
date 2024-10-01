@@ -424,7 +424,6 @@ trait Schemata
                                         if (class_exists($class)) {
                                             $newClass = (new $class);
                                             if ($newClass->hasOptions()) {
-                                                dump($newClass);
                                                 return $newClass->getOptions($allSections, $component->getState()[$arguments['item']]);
                                             }
                                         }
