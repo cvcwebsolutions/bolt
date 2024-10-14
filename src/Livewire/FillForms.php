@@ -7,6 +7,7 @@ use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use LaraZeus\Bolt\Concerns\Designer;
 use LaraZeus\Bolt\Events\FormMounted;
@@ -52,12 +53,17 @@ class FillForms extends Component implements Forms\Contracts\HasForms
         $arrayComponent = array_merge($getDesignerClass::ui($this->zeusForm, $this->inline), [
             Turnstile::make('captcha')
                 ->theme('light') // accepts light, dark, auto
-                ->language('en-US') // see below
+                ->language('en-us') // see below
                 ->size('normal'), // accepts normal, compact
         ]);
         return $arrayComponent;
     }
+    protected function onValidationError(ValidationException $exception): void
+    {
+        $this->dispatch('reset-captcha');
 
+        // Perform additional actions as necessary (e.g., display error messages)
+    }
     protected function getFormModel(): Form
     {
         return $this->zeusForm;
