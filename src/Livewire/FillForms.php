@@ -32,7 +32,7 @@ class FillForms extends Component implements Forms\Contracts\HasForms
     public bool $sent = false;
 
     public bool $inline = false;
-    public $captcha;
+    public bool $captcha = false;
     protected static ?string $boltFormDesigner = null;
 
     public function getBoltFormDesigner(): ?string
@@ -85,8 +85,9 @@ class FillForms extends Component implements Forms\Contracts\HasForms
         foreach ($this->zeusForm->fields as $field) {
             $this->zeusData[$field->id] = '';
         }
-
-        $this->form->fill();
+        $this->form->fill([
+            'captcha' => $this->captcha,
+        ]);
 
         event(new FormMounted($this->zeusForm));
     }
