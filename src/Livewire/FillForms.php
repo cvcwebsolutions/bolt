@@ -60,12 +60,7 @@ class FillForms extends Component implements Forms\Contracts\HasForms
         ]);
         return $arrayComponent;
     }
-    protected function onValidationError(ValidationException $exception): void
-    {
-        $this->dispatch('reset-captcha');
 
-        // Perform additional actions as necessary (e.g., display error messages)
-    }
     protected function getFormModel(): Form
     {
         return $this->zeusForm;
@@ -93,9 +88,7 @@ class FillForms extends Component implements Forms\Contracts\HasForms
         foreach ($this->zeusForm->fields as $field) {
             $this->zeusData[$field->id] = '';
         }
-        $this->form->fill([
-            'captcha' => $this->captcha,
-        ]);
+        $this->form->fill();
 
         event(new FormMounted($this->zeusForm));
     }
