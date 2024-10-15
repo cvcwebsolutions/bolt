@@ -2,6 +2,7 @@
 
 namespace LaraZeus\Bolt\Livewire;
 
+use AbanoubNassem\FilamentGRecaptchaField\Forms\Components\GRecaptcha;
 use Coderflex\FilamentTurnstile\Forms\Components\Turnstile;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -33,7 +34,7 @@ class FillForms extends Component implements Forms\Contracts\HasForms
     public bool $sent = false;
 
     public bool $inline = false;
-    public bool $captcha = false;
+    public $captcha = '';
     protected static ?string $boltFormDesigner = null;
 
     public function getBoltFormDesigner(): ?string
@@ -51,10 +52,11 @@ class FillForms extends Component implements Forms\Contracts\HasForms
         $getDesignerClass = $this->getBoltFormDesigner() ?? Designer::class;
 
         $arrayComponent = array_merge($getDesignerClass::ui($this->zeusForm, $this->inline), [
-            Turnstile::make('captcha')
-                ->theme('light') // accepts light, dark, auto
-                ->language('en-us') // see below
-                ->size('normal'), // accepts normal, compact
+//            Turnstile::make('captcha')
+//                ->theme('light') // accepts light, dark, auto
+//                ->language('en-us') // see below
+//                ->size('normal'), // accepts normal, compact,
+            GRecaptcha::make('captcha')
         ]);
         return $arrayComponent;
     }
