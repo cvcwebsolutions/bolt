@@ -2,8 +2,6 @@
 
 namespace LaraZeus\Bolt\Livewire;
 
-use AbanoubNassem\FilamentGRecaptchaField\Forms\Components\GRecaptcha;
-use Coderflex\FilamentTurnstile\Forms\Components\Turnstile;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Illuminate\Support\Arr;
@@ -16,7 +14,8 @@ use LaraZeus\Bolt\Events\FormSent;
 use LaraZeus\Bolt\Facades\Extensions;
 use LaraZeus\Bolt\Models\Form;
 use Livewire\Component;
-
+use Spatie\Honeypot\Http\Livewire\Concerns\UsesSpamProtection;
+use Spatie\Honeypot\Http\Livewire\Concerns\HoneypotData;
 /**
  * @property mixed $form
  */
@@ -24,7 +23,7 @@ class FillForms extends Component implements Forms\Contracts\HasForms
 {
     use Designer;
     use InteractsWithForms;
-
+    use UsesSpamProtection;
     public Form $zeusForm;
 
     public array $extensionData;
@@ -34,7 +33,7 @@ class FillForms extends Component implements Forms\Contracts\HasForms
     public bool $sent = false;
 
     public bool $inline = false;
-    public $captcha = '';
+    public HoneypotData $extraFields;
     protected static ?string $boltFormDesigner = null;
 
     public function getBoltFormDesigner(): ?string
@@ -51,14 +50,7 @@ class FillForms extends Component implements Forms\Contracts\HasForms
     {
         $getDesignerClass = $this->getBoltFormDesigner() ?? Designer::class;
 
-        $arrayComponent = array_merge($getDesignerClass::ui($this->zeusForm, $this->inline), [
-            Turnstile::make('captcha')
-                ->theme('light') // accepts light, dark, auto
-                ->language('en-us') // see below
-                ->size('normal'), // accepts normal, compact,
-//            GRecaptcha::make('captcha')
-        ]);
-        return $arrayComponent;
+        return $getDesignerClass::ui($this->zeusForm, $this->inline);
     }
     protected function onValidationError(ValidationException $exception): void
     {
@@ -93,6 +85,7 @@ class FillForms extends Component implements Forms\Contracts\HasForms
         foreach ($this->zeusForm->fields as $field) {
             $this->zeusData[$field->id] = '';
         }
+        $this->extraFields = new HoneypotData();
         $this->form->fill();
 
         event(new FormMounted($this->zeusForm));
@@ -101,6 +94,7 @@ class FillForms extends Component implements Forms\Contracts\HasForms
     public function store(): void
     {
         $this->validate();
+        $this->protectAgainstSpam();
 
         Extensions::init($this->zeusForm, 'preStore', $this->extensionData);
 
