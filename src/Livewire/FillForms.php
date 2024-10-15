@@ -52,15 +52,20 @@ class FillForms extends Component implements Forms\Contracts\HasForms
         $getDesignerClass = $this->getBoltFormDesigner() ?? Designer::class;
 
         $arrayComponent = array_merge($getDesignerClass::ui($this->zeusForm, $this->inline), [
-//            Turnstile::make('captcha')
-//                ->theme('light') // accepts light, dark, auto
-//                ->language('en-us') // see below
-//                ->size('normal'), // accepts normal, compact,
-            GRecaptcha::make('captcha')
+            Turnstile::make('captcha')
+                ->theme('light') // accepts light, dark, auto
+                ->language('en-us') // see below
+                ->size('normal'), // accepts normal, compact,
+//            GRecaptcha::make('captcha')
         ]);
         return $arrayComponent;
     }
+    protected function onValidationError(ValidationException $exception): void
+    {
+        $this->dispatch('reset-captcha');
 
+        // Perform additional actions as necessary (e.g., display error messages)
+    }
     protected function getFormModel(): Form
     {
         return $this->zeusForm;
