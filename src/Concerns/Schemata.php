@@ -324,9 +324,9 @@ trait Schemata
                 ->label(__('Design'))
                 ->visible(Bolt::hasPro() && config('zeus-bolt.allow_design'))
                 ->schema([
-                    ViewField::make('options.primary_color')
-                        ->hiddenLabel()
-                        ->view('zeus::filament.components.color-picker'),
+//                    ViewField::make('options.primary_color')
+//                        ->hiddenLabel()
+//                        ->view('zeus::filament.components.color-picker'),
                     FileUpload::make('options.logo')
                         ->disk(config('zeus-bolt.uploadDisk'))
                         ->directory(config('zeus-bolt.uploadDirectory'))
